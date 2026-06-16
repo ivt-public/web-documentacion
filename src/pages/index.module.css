@@ -1,0 +1,107 @@
+.heroBanner {
+  padding: 5.5rem 0 4.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 3.5rem 1.5rem 3rem;
+  }
+}
+
+/* ── Título principal ─────────────────────────────────── */
+.heroTitle {
+  color: #ffffff !important;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Tagline rotante ──────────────────────────────────── */
+.rotatingTagline {
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  min-height: 2em;
+  margin-bottom: 0;
+  /* color se aplica via inline style desde React (varía por frase) */
+  transition: opacity 0.35s ease, transform 0.35s ease, color 0.35s ease;
+}
+
+.fadeIn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fadeOut {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* ── Dots de navegación ───────────────────────────────── */
+.dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 1.1rem 0 2rem;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.35s ease, transform 0.35s ease;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.50);
+}
+
+/* El activo recibe su color via inline style + escala mayor */
+.dotActive {
+  transform: scale(1.55);
+}
+
+/* ── Botón CTA ────────────────────────────────────────── */
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroBtn {
+  min-width: 240px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  border-radius: 8px;
+  padding: 0.8rem 2rem;
+
+  /* Estilo sólido rojo Argos */
+  background-color: #E53935;
+  border: 2px solid #E53935;
+  color: #ffffff !important;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.heroBtn:hover {
+  background-color: #C5302D;
+  border-color: #C5302D;
+  color: #ffffff !important;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(229, 57, 53, 0.40);
+}
+
+.heroBtn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}

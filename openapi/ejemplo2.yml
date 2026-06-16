@@ -1,0 +1,12 @@
+openapi: 3.0.0
+info:
+  title: "API de Gestión de Usuarios"
+  version: "1.1.0"
+  description: "Administración de perfiles y permisos de acceso."
+paths:
+  /login:
+    post:
+      summary: "Iniciar sesión"
+      responses:
+        200:
+          description: "Token generado"

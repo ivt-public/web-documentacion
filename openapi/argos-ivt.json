@@ -1,0 +1,485 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Facial Verification API",
+    "version": "1.0.0",
+    "description": "Comparación biométrica facial resistente al envejecimiento — ArcFace / DeepFace\n\n## Flujos de autenticación\n\n### Flujo SDK (recomendado)\n1. El frontend llama `POST /verify/session-token` al iniciar el flujo.\n2. El backend emite un token de un solo uso (TTL configurable).\n3. El SDK firma la imagen capturada usando el token como clave HMAC.\n4. El SDK envía `image_captured + firma + session_token` a `POST /verify`.\n5. El backend valida y destruye el token.\n\n### Flujo legacy (sin SDK)\nSe firma directamente con la `SECRET_KEY` del servidor usando `timestamp + nonce + image`."
+  },
+  "tags": [
+    { "name": "Utilidades", "description": "Endpoints de monitoreo y estado del servicio" },
+    { "name": "Sesión", "description": "Emisión de tokens de sesión para el flujo SDK" },
+    { "name": "Verificación", "description": "Endpoint principal de verificación facial biométrica" },
+    { "name": "Debug", "description": "Endpoints auxiliares disponibles solo en `DEBUG_MODE=true`" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_check",
+        "summary": "Health Check",
+        "description": "Verifica que el servicio esté activo y retorna el modelo cargado.",
+        "tags": ["Utilidades"],
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl http://localhost:8000/health"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nres = requests.get(\"http://localhost:8000/health\")\nprint(res.json())\n# {'status': 'ok', 'modelo': 'ArcFace', 'debug_mode': True}"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "JS (fetch)",
+            "source": "const res = await fetch(\"http://localhost:8000/health\");\nconst data = await res.json();\nconsole.log(data);"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Servicio operativo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "modelo": { "type": "string", "example": "ArcFace" },
+                    "debug_mode": { "type": "boolean", "example": false }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "operationId": "verify",
+        "summary": "Verify",
+        "description": "Endpoint de producción para verificación facial biométrica.\n\nSoporta dos flujos:\n- **Flujo SDK** (recomendado): incluir `session_token` en el payload. El token fue emitido por `POST /verify/session-token` y se usa como clave HMAC. Se destruye tras un único uso.\n- **Flujo legacy**: no incluir `session_token`. La firma HMAC se verifica con la `SECRET_KEY` del servidor.",
+        "tags": ["Verificación"],
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL — Flujo SDK",
+            "source": "# Paso 1: Obtener session token\nTOKEN=$(curl -s -X POST http://localhost:8000/verify/session-token \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"user_id\": \"user-123\"}' \\\n  | python3 -c 'import sys,json; print(json.load(sys.stdin)[\"session_token\"])')\n\nFOTO=$(base64 -w 0 mi_foto.jpg)\nTS=$(date +%s)\nNONCE=$(openssl rand -base64 12 | tr '/+' '_-' | tr -d '=')\nSIG=$(echo -n \"$TS:$NONCE:$FOTO\" | openssl dgst -sha256 -hmac \"$TOKEN\" | awk '{print $2}')\n\n# Paso 2: Verificar\ncurl -X POST http://localhost:8000/verify \\\n  -H 'Content-Type: application/json' \\\n  -d \"{ \\\"image_captured\\\": \\\"$FOTO\\\", \\\"timestamp\\\": \\\"$TS\\\", \\\"nonce\\\": \\\"$NONCE\\\", \\\"signature\\\": \\\"$SIG\\\", \\\"user_id\\\": \\\"user-123\\\", \\\"session_token\\\": \\\"$TOKEN\\\" }\""
+          },
+          {
+            "lang": "Python",
+            "label": "Python — Flujo SDK",
+            "source": "import base64, hashlib, hmac, os, time\nimport requests\n\nUSER_ID = \"user-123\"\nBASE_URL = \"http://localhost:8000\"\n\n# Paso 1: Obtener session token\nr = requests.post(f\"{BASE_URL}/verify/session-token\", json={\"user_id\": USER_ID})\ntoken = r.json()[\"session_token\"]\n\n# Paso 2: Preparar imagen y firma\nwith open(\"mi_foto.jpg\", \"rb\") as f:\n    img_b64 = base64.b64encode(f.read()).decode()\n\nts = str(int(time.time()))\nnonce = base64.urlsafe_b64encode(os.urandom(12)).decode()\nmessage = f\"{ts}:{nonce}:{img_b64}\"\nsignature = hmac.new(token.encode(), message.encode(), hashlib.sha256).hexdigest()\n\n# Paso 3: Verificar\nres = requests.post(f\"{BASE_URL}/verify\", json={\n    \"image_captured\": img_b64,\n    \"timestamp\": ts,\n    \"nonce\": nonce,\n    \"signature\": signature,\n    \"user_id\": USER_ID,\n    \"session_token\": token,\n})\nprint(res.json())"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL — Flujo legacy",
+            "source": "# Generar firma con el helper de debug (solo DEBUG_MODE=true)\nFOTO=$(base64 -w 0 mi_foto.jpg)\nFIRMA_JSON=$(curl -s -X POST http://localhost:8000/verify/generate-signature \\\n  -H 'Content-Type: application/json' \\\n  -d \"{\\\"image_captured\\\": \\\"$FOTO\\\", \\\"user_id\\\": \\\"user-123\\\"}\")\n\n# Usar los campos generados directamente\ncurl -X POST http://localhost:8000/verify \\\n  -H 'Content-Type: application/json' \\\n  -d \"$FIRMA_JSON\""
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VerifyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verificación completada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VerifyResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Firma criptográfica inválida, token de sesión expirado o ya utilizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorDetail" }
+              }
+            }
+          },
+          "422": {
+            "description": "Error de validación de campos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de peticiones excedido (rate limit)"
+          }
+        }
+      }
+    },
+    "/verify/session-token": {
+      "post": {
+        "operationId": "emitir_session_token",
+        "summary": "Emitir Session Token",
+        "description": "Emite un token de sesión temporal de un solo uso para el SDK de liveness.\n\nEl token tiene un TTL configurable (`SESSION_TOKEN_TTL`, default 180 s) y solo puede usarse **una vez** en `POST /verify`.\n\n> **Nota de producción**: protegido con el JWT del usuario autenticado para validar que `user_id` corresponde al usuario en sesión.",
+        "tags": ["Sesión"],
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -X POST http://localhost:8000/verify/session-token \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"user_id\": \"user-123\"}'"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nres = requests.post(\n    \"http://localhost:8000/verify/session-token\",\n    json={\"user_id\": \"user-123\"},\n)\ndata = res.json()\nprint(data[\"session_token\"])  # usar como clave HMAC en POST /verify\nprint(data[\"expires_in\"])     # 180 segundos"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "JS (fetch)",
+            "source": "const res = await fetch(\"http://localhost:8000/verify/session-token\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({ user_id: \"user-123\" }),\n});\nconst { session_token, expires_in } = await res.json();"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SessionTokenRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Token de sesión emitido correctamente",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SessionTokenResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "No se encontró foto de referencia para el `user_id` indicado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorDetail" }
+              }
+            }
+          },
+          "422": {
+            "description": "Error de validación de campos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de peticiones excedido (rate limit)"
+          }
+        }
+      }
+    },
+    "/verify/debug": {
+      "post": {
+        "operationId": "verify_debug",
+        "summary": "Verify Debug",
+        "description": "Verifica dos rostros sin requerir firma HMAC ni session token. Ideal para probar la integración desde Swagger o scripts.\n\n> **Solo disponible cuando `DEBUG_MODE=true`**. En producción retorna 403.",
+        "tags": ["Debug"],
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "FOTO=$(base64 -w 0 mi_foto.jpg)\n\ncurl -X POST http://localhost:8000/verify/debug \\\n  -H 'Content-Type: application/json' \\\n  -d \"{\\\"image_captured\\\": \\\"$FOTO\\\", \\\"user_id\\\": \\\"user-123\\\"}\""
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import base64, requests\n\nwith open(\"mi_foto.jpg\", \"rb\") as f:\n    img_b64 = base64.b64encode(f.read()).decode()\n\nres = requests.post(\n    \"http://localhost:8000/verify/debug\",\n    json={\"image_captured\": img_b64, \"user_id\": \"user-123\"},\n)\ndata = res.json()\nprint(f\"Autenticado: {data['autenticado']}\")\nprint(f\"Similitud:   {data['confianza_similitud']}%\")"
+          },
+          {
+            "lang": "JavaScript",
+            "label": "JS (fetch)",
+            "source": "// img_b64 = imagen JPEG convertida a base64\nconst res = await fetch(\"http://localhost:8000/verify/debug\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({ image_captured: img_b64, user_id: \"user-123\" }),\n});\nconst { autenticado, confianza_similitud, metricas } = await res.json();"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DebugVerifyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado de verificación en modo debug (incluye `debug: true`)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VerifyResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "El modo debug está desactivado en este entorno",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorDetail" }
+              }
+            }
+          },
+          "422": {
+            "description": "Error de validación de campos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify/generate-signature": {
+      "post": {
+        "operationId": "generate_signature",
+        "summary": "Generate Signature",
+        "description": "Genera automáticamente un `timestamp`, `nonce` y firma HMAC-SHA256 con la `SECRET_KEY` del servidor para el **flujo legacy**.\n\nRetorna todos los campos listos para enviar directamente a `POST /verify` sin `session_token`. Útil para pruebas manuales sin implementar la lógica de firma en el cliente.\n\n> **Solo disponible cuando `DEBUG_MODE=true`**.",
+        "tags": ["Debug"],
+        "x-codeSamples": [
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "FOTO=$(base64 -w 0 mi_foto.jpg)\n\n# Paso 1: Generar la firma\nFIRMA=$(curl -s -X POST http://localhost:8000/verify/generate-signature \\\n  -H 'Content-Type: application/json' \\\n  -d \"{\\\"image_captured\\\": \\\"$FOTO\\\", \\\"user_id\\\": \\\"user-123\\\"}\")\n\necho $FIRMA | python3 -m json.tool\n\n# Paso 2: Usar directamente en /verify (los campos ya están listos)\ncurl -X POST http://localhost:8000/verify \\\n  -H 'Content-Type: application/json' \\\n  -d \"$FIRMA\""
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import base64, requests\n\nwith open(\"mi_foto.jpg\", \"rb\") as f:\n    img_b64 = base64.b64encode(f.read()).decode()\n\nBASE_URL = \"http://localhost:8000\"\n\n# Paso 1: Generar firma\nr = requests.post(\n    f\"{BASE_URL}/verify/generate-signature\",\n    json={\"image_captured\": img_b64, \"user_id\": \"user-123\"},\n)\nfirma = r.json()\n\n# Paso 2: Usar los campos generados directamente en /verify\nres = requests.post(f\"{BASE_URL}/verify\", json=firma)\nprint(res.json())"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DebugVerifyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Firma HMAC generada con los campos para usar en POST /verify",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenerateSignatureResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "El modo debug está desactivado en este entorno",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorDetail" }
+              }
+            }
+          },
+          "422": {
+            "description": "Error de validación de campos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VerifyRequest": {
+        "type": "object",
+        "required": ["image_captured", "timestamp", "nonce", "signature", "user_id"],
+        "properties": {
+          "image_captured": {
+            "type": "string",
+            "maxLength": 2000000,
+            "description": "Imagen capturada en Base64 sin prefijo (`data:image/...`). JPEG recomendado, ~640x480px."
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Unix timestamp en segundos como string. El servidor rechaza peticiones con desfase > 5 min (300 s).",
+            "example": "1717400000"
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Token único anti-replay generado por el cliente (12 bytes random en base64url).",
+            "example": "aB3xZ9qLmN2o"
+          },
+          "signature": {
+            "type": "string",
+            "description": "Firma HMAC-SHA256 en hex del mensaje `timestamp:nonce:image_captured`.",
+            "example": "e3b0c44298fc1c149afb..."
+          },
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_\\-]+$",
+            "description": "ID del usuario a verificar. Solo alfanumérico, guiones y guiones bajos.",
+            "example": "user-123"
+          },
+          "session_token": {
+            "type": "string",
+            "nullable": true,
+            "description": "Token emitido por `POST /verify/session-token` (flujo SDK). Si se omite, se usa el flujo legacy con SECRET_KEY.",
+            "example": null
+          }
+        }
+      },
+      "DebugVerifyRequest": {
+        "type": "object",
+        "required": ["image_captured", "user_id"],
+        "properties": {
+          "image_captured": {
+            "type": "string",
+            "maxLength": 2000000,
+            "description": "Imagen capturada en Base64 (JPEG)"
+          },
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_\\-]+$",
+            "description": "ID del usuario a verificar",
+            "example": "user-123"
+          }
+        }
+      },
+      "SessionTokenRequest": {
+        "type": "object",
+        "required": ["user_id"],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z0-9_\\-]+$",
+            "description": "ID del usuario que inicia el flujo de liveness",
+            "example": "user-123"
+          }
+        }
+      },
+      "SessionTokenResponse": {
+        "type": "object",
+        "required": ["session_token", "expires_in"],
+        "properties": {
+          "session_token": {
+            "type": "string",
+            "description": "Token temporal de un solo uso (TTL configurable en `SESSION_TOKEN_TTL`)"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Segundos hasta la expiración del token",
+            "example": 180
+          }
+        }
+      },
+      "VerifyResponse": {
+        "type": "object",
+        "required": ["autenticado", "confianza_similitud", "metricas"],
+        "properties": {
+          "autenticado": {
+            "type": "boolean",
+            "description": "Indica si el rostro capturado corresponde al usuario registrado"
+          },
+          "confianza_similitud": {
+            "type": "number",
+            "format": "float",
+            "description": "Porcentaje de similitud entre los rostros (0–100). Autenticado cuando >= `metricas.umbral_aplicado`.",
+            "example": 87.45
+          },
+          "metricas": {
+            "$ref": "#/components/schemas/FaceMetrics"
+          },
+          "debug": {
+            "type": "boolean",
+            "default": false,
+            "description": "Indica si la respuesta fue generada en modo debug"
+          }
+        }
+      },
+      "FaceMetrics": {
+        "type": "object",
+        "required": ["distancia", "umbral_aplicado", "umbral_deepface", "modelo", "detector"],
+        "properties": {
+          "distancia": {
+            "type": "number",
+            "format": "float",
+            "description": "Distancia euclidiana entre embeddings faciales. Menor = más similar.",
+            "example": 0.234567
+          },
+          "umbral_aplicado": {
+            "type": "number",
+            "format": "float",
+            "description": "Umbral de similitud propio (porcentaje 0–100). Configurable con `SIMILARITY_THRESHOLD` (default 40.0). Si `confianza_similitud` >= este valor → autenticado.",
+            "example": 40.0
+          },
+          "umbral_deepface": {
+            "type": "number",
+            "format": "float",
+            "description": "Umbral de distancia nativo de DeepFace/ArcFace. Referencial; el sistema usa `umbral_aplicado` como criterio definitivo.",
+            "example": 0.68
+          },
+          "modelo": {
+            "type": "string",
+            "description": "Modelo de reconocimiento facial utilizado",
+            "example": "ArcFace"
+          },
+          "detector": {
+            "type": "string",
+            "description": "Backend detector de rostros utilizado",
+            "example": "opencv"
+          }
+        }
+      },
+      "GenerateSignatureResponse": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string", "example": "user-123" },
+          "timestamp": { "type": "string", "example": "1717400000" },
+          "nonce": { "type": "string", "example": "aB3xZ9qLmN2o" },
+          "signature": { "type": "string", "example": "e3b0c44298fc1c149afb..." },
+          "image_captured": { "type": "string", "description": "La misma imagen enviada en el request" },
+          "instruccion": {
+            "type": "string",
+            "example": "Copia estos campos y úsalos en POST /verify (flujo legacy, sin session_token)"
+          }
+        }
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "Mensaje de error descriptivo",
+            "example": "Firma criptográfica inválida."
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "loc": { "type": "array", "items": { "type": "string" } },
+                "msg": { "type": "string" },
+                "type": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

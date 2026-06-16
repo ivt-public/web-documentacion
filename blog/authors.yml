@@ -1,0 +1,79 @@
+risco:
+  name: Marco Risco
+  title: Chief Technology Officer
+  image_url: /img/team/risco.png
+  page: true
+  socials:
+    linkedin: marco-risco        # reemplazar con username real de LinkedIn
+    github: marco-risco          # reemplazar con username real de GitHub
+    x: marco_risco               # reemplazar con username real de X/Twitter
+
+abel:
+  name: Abel Chingo
+  title: Solutions Architect
+  image_url: /img/team/abel.png
+  page: true
+  socials:
+    linkedin: abel-chingo
+    github: abel-chingo
+    x: abel_chingo
+
+cumpa:
+  name: Josué Cumpa
+  title: Technical Lead
+  image_url: /img/team/cumpa.png
+  page: true
+  socials:
+    linkedin: josue-cumpa
+    github: josue-cumpa
+    x: josue_cumpa
+
+diaz:
+  name: Cristhian Diaz
+  title: Artificial Intelligence Engineer
+  image_url: /img/team/diaz.png
+  page: true
+  socials:
+    linkedin: cristhian-diaz
+    github: cristhian-diaz
+    x: cristhian_diaz
+
+terrones:
+  name: Jampierre Terrones
+  title: DevOps Engineer
+  image_url: /img/team/terrones.png
+  page: true
+  socials:
+    linkedin: jampierre-terrones
+    github: jampierre-terrones
+    x: jampierre_terrones
+
+hoyos:
+  name: Alex Hoyos
+  title: Full Stack Developer
+  image_url: /img/team/hoyos.png
+  page: true
+  socials:
+    linkedin: alex-hoyos
+    github: alex-hoyos
+    x: alex_hoyos
+
+hernandez:
+  name: Alex Hernandez
+  title: Full Stack Developer
+  image_url: /img/team/hernandez.png
+  page: true
+  socials:
+    linkedin: alex-hernandez
+    github: alex-hernandez
+    x: alex_hernandez
+
+gonzales:
+  name: Anggelo Gonzales
+  title: Full Stack Developer
+  image_url: /img/team/gonzales.png
+  page: true
+  socials:
+    linkedin: anggelo-gonzales
+    github: anggelo-gonzales
+    x: anggelo_gonzales

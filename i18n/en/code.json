@@ -1,0 +1,46 @@
+{
+  "hero.tagline.1": {
+    "message": "The digital wallet that protects your future.",
+    "description": "Hero rotating tagline 1"
+  },
+  "hero.tagline.2": {
+    "message": "Manage your finances with security and simplicity.",
+    "description": "Hero rotating tagline 2"
+  },
+  "hero.tagline.3": {
+    "message": "Advanced biometric technology to protect your assets.",
+    "description": "Hero rotating tagline 3"
+  },
+  "hero.tagline.4": {
+    "message": "Fast, secure, and hassle-free transactions.",
+    "description": "Hero rotating tagline 4"
+  },
+  "hero.cta": {
+    "message": "Explore Documentation",
+    "description": "Hero call-to-action button text"
+  },
+  "feature.easy.title": {
+    "message": "Easy to Use",
+    "description": "Title of the first homepage feature card"
+  },
+  "feature.easy.desc": {
+    "message": "ARGOS was designed from the ground up to be easy to use and install, so you can start managing your finances right away.",
+    "description": "Description of the first homepage feature card"
+  },
+  "feature.focus.title": {
+    "message": "Focus on What Matters",
+    "description": "Title of the second homepage feature card"
+  },
+  "feature.focus.desc": {
+    "message": "ARGOS helps you focus on what matters, and we take care of the rest. Organize your finances and manage your transactions from a single place.",
+    "description": "Description of the second homepage feature card"
+  },
+  "feature.security.title": {
+    "message": "Powered by Security",
+    "description": "Title of the third homepage feature card"
+  },
+  "feature.security.desc": {
+    "message": "Your security is our priority. ARGOS uses advanced encryption technology to protect your data and your money at all times.",
+    "description": "Description of the third homepage feature card"
+  }
+}

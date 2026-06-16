@@ -1,0 +1,121 @@
+.features {
+  padding: 5rem 0 4rem;
+  width: 100%;
+}
+
+.featuresRow {
+  gap: 0;
+  row-gap: 2rem;
+}
+
+/* ── Card ─────────────────────────────────────────────── */
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+[data-theme='light'] .featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(26, 32, 44, 0.10);
+}
+
+[data-theme='dark'] .featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Image ────────────────────────────────────────────── */
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 220px;
+  margin-bottom: 2rem;
+}
+
+.featureImg {
+  height: 220px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
+  border-radius: 12px;
+  /* Sutil brillo para que las imágenes destaquen sobre el fondo oscuro */
+  filter: drop-shadow(0 4px 16px rgba(99, 179, 237, 0.18));
+  transition: filter 0.22s ease, transform 0.22s ease;
+}
+
+.featureCard:hover .featureImg {
+  filter: drop-shadow(0 6px 24px rgba(99, 179, 237, 0.28));
+  transform: scale(1.03);
+}
+
+/* ── Text ─────────────────────────────────────────────── */
+.featureBody {
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.featureTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+[data-theme='light'] .featureTitle {
+  color: #1A202C;
+}
+
+[data-theme='dark'] .featureTitle {
+  color: #F8FAFC;
+}
+
+.featureDesc {
+  font-size: 0.93rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+[data-theme='light'] .featureDesc {
+  color: #4A5568;
+}
+
+[data-theme='dark'] .featureDesc {
+  color: rgba(248, 250, 252, 0.72);
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media screen and (max-width: 996px) {
+  .features {
+    padding: 3rem 0;
+  }
+
+  .featureCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .imageWrapper {
+    height: 180px;
+    margin-bottom: 1.5rem;
+  }
+
+  .featureImg {
+    height: 180px;
+    max-width: 200px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .imageWrapper {
+    height: 150px;
+  }
+
+  .featureImg {
+    height: 150px;
+  }
+}

@@ -1,0 +1,14 @@
+equipo:
+  label: Equipo
+  permalink: /equipo
+  description: Publicaciones del equipo Argos
+
+ingenieria:
+  label: Ingeniería
+  permalink: /ingenieria
+  description: Artículos técnicos de ingeniería
+
+actualizaciones:
+  label: Actualizaciones
+  permalink: /actualizaciones
+  description: Novedades y actualizaciones de la plataforma

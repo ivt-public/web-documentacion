@@ -1,0 +1,46 @@
+/* src/css/imprimir.css */
+
+/* Solo se aplica cuando se abre el diálogo de impresión */
+@media print {
+  /* Ocultar elementos globales de Docusaurus */
+  .navbar, 
+  .footer, 
+  .theme-doc-sidebar, 
+  .theme-last-updated, 
+  .pagination-nav,
+  button,
+  .print-button {
+    display: none !important;
+  }
+
+  /* Ajustar el cuerpo para impresión */
+  body {
+    background-color: white !important;
+    font-size: 12pt;
+    color: black;
+  }
+
+  /* FORZAR que Redoc (la API) se expanda y sea visible */
+  .redoc-json, 
+  article, 
+  main {
+    display: block !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* Evitar que los títulos de los Endpoints se corten */
+  h1, h2, h3 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  .menu-content h2 {
+    page-break-before: always; /* Cada endpoint principal en hoja nueva */
+  }
+
+  /* Ajustar márgenes de la página */
+  @page {
+    margin: 2cm;
+  }
+}

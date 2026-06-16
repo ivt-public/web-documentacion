@@ -1,0 +1,307 @@
+/* ── Página ──────────────────────────────────────────── */
+.page {
+  background-color: var(--ifm-background-color);
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.header {
+  text-align: center;
+  padding: 5rem 1.5rem 3rem;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.sectionLabel {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #E53935;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: var(--ifm-font-color-base);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.highlight {
+  background: linear-gradient(135deg, #E53935 0%, #FF7043 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--equipo-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Stats ───────────────────────────────────────────── */
+.stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1px;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  background: var(--equipo-stats-bg);
+  border: 1px solid var(--equipo-stats-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.statItem {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  background: var(--equipo-stat-item-bg);
+  gap: 0.25rem;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #E53935;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--equipo-muted);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ── Team section ────────────────────────────────────── */
+.teamSection {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.teamTitle {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ifm-font-color-base);
+  margin-bottom: 0.5rem;
+}
+
+.teamSubtitle {
+  text-align: center;
+  color: var(--equipo-muted);
+  font-size: 0.95rem;
+  margin-bottom: 3rem;
+}
+
+/* CTO — card centrada y ancha */
+.featuredRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.featuredRow .card {
+  max-width: 420px;
+  width: 100%;
+}
+
+/* Architect — card centrada, estándar */
+.secondRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.secondRow .card {
+  max-width: 360px;
+  width: 100%;
+}
+
+/* Resto — grid 3 columnas */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .featuredRow .card,
+  .secondRow .card {
+    max-width: 100%;
+  }
+}
+
+/* ── Card ────────────────────────────────────────────── */
+.card {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--equipo-card-border);
+  border-radius: 16px;
+  padding: 2rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  border-color: var(--equipo-card-border-hover);
+}
+
+/* Card destacada (CTO) */
+.featured {
+  background: var(--equipo-featured-bg);
+  border-color: rgba(229, 57, 53, 0.25);
+  box-shadow: var(--equipo-featured-shadow);
+}
+
+.featured:hover {
+  border-color: rgba(229, 57, 53, 0.45);
+  box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.3), 0 16px 40px rgba(229, 57, 53, 0.15);
+}
+
+/* ── Foto con anillo degradado ───────────────────────── */
+.photoRing {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  padding: 3px;
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+
+.featured .photoRing {
+  width: 112px;
+  height: 112px;
+}
+
+/* Colores de anillo por rol */
+.ring_cto       { background: linear-gradient(135deg, #E53935, #FF7043); }
+.ring_architect { background: linear-gradient(135deg, #3182CE, #63B3ED); }
+.ring_lead      { background: linear-gradient(135deg, #319795, #81E6D9); }
+.ring_ai        { background: linear-gradient(135deg, #805AD5, #B794F4); }
+.ring_devops    { background: linear-gradient(135deg, #DD6B20, #F6AD55); }
+.ring_fullstack { background: linear-gradient(135deg, #2F855A, #68D391); }
+.ring_backend   { background: linear-gradient(135deg, #4C51BF, #7F9CF5); }
+
+.photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 15%;
+  background: #2D3748;
+  display: block;
+}
+
+/* ── Card body ───────────────────────────────────────── */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ifm-font-color-base);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.featured .name {
+  font-size: 1.2rem;
+}
+
+/* ── Role badge ──────────────────────────────────────── */
+.roleBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+/* Modo claro — fondos opacos claros, texto oscuro para contraste adecuado */
+.badge_cto       { background: #FDE8E8; color: #9B2C2C; }
+.badge_architect { background: #EBF4FF; color: #1A4E8C; }
+.badge_lead      { background: #E6FFFA; color: #1D4044; }
+.badge_ai        { background: #FAF5FF; color: #44337A; }
+.badge_devops    { background: #FFFAF0; color: #7B3318; }
+.badge_fullstack { background: #F0FFF4; color: #1C4B34; }
+.badge_backend   { background: #EEF2FF; color: #2D3182; }
+
+/* Modo oscuro — fondos rgba translúcidos, texto claro */
+[data-theme='dark'] .badge_cto       { background: rgba(229, 57, 53, 0.18);  color: #FC8181; }
+[data-theme='dark'] .badge_architect { background: rgba(49, 130, 206, 0.18); color: #90CDF4; }
+[data-theme='dark'] .badge_lead      { background: rgba(49, 151, 149, 0.18); color: #81E6D9; }
+[data-theme='dark'] .badge_ai        { background: rgba(128, 90, 213, 0.18); color: #D6BCFA; }
+[data-theme='dark'] .badge_devops    { background: rgba(221, 107, 32, 0.18); color: #FBD38D; }
+[data-theme='dark'] .badge_fullstack { background: rgba(47, 133, 90, 0.18);  color: #9AE6B4; }
+[data-theme='dark'] .badge_backend   { background: rgba(76, 81, 191, 0.18);  color: #A3BFFA; }
+
+/* ── Description ─────────────────────────────────────── */
+.description {
+  font-size: 0.85rem;
+  color: var(--equipo-muted);
+  line-height: 1.6;
+  margin: 0.25rem 0 0.5rem;
+}
+
+/* ── Social buttons ──────────────────────────────────── */
+.socials {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.socialBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--equipo-social-bg);
+  color: var(--equipo-social-color);
+  border: 1px solid var(--equipo-social-border);
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+  text-decoration: none;
+}
+
+.socialBtn:hover {
+  background: var(--equipo-social-hover-bg);
+  color: var(--equipo-social-hover-color);
+  transform: translateY(-2px);
+  text-decoration: none;
+}

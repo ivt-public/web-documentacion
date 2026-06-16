@@ -1,0 +1,18 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Ventas y Pedidos",
+    "version": "1.0.0",
+    "description": "Endpoints para gestionar transacciones comerciales."
+  },
+  "paths": {
+    "/pedidos": {
+      "get": {
+        "summary": "Listar pedidos",
+        "responses": {
+          "200": { "description": "Lista de pedidos obtenida con éxito" }
+        }
+      }
+    }
+  }
+}

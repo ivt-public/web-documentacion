@@ -1,0 +1,370 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OCR privado",
+    "version": "1.0.0",
+    "description": "API privada para OCR de DNI peruano. Procesa frente/reverso y puede guardar la foto del rostro del frente en S3."
+  },
+  "tags": [
+    { "name": "Utilidades", "description": "Monitoreo y estado del servicio" },
+    { "name": "OCR", "description": "Procesamiento óptico de caracteres sobre imágenes del DNI peruano" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Utilidades"],
+        "summary": "Estado del servicio OCR",
+        "description": "Devuelve si los modelos OCR ya estan listos. Mientras el warm-up termina responde 503.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "OCR listo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "examples": {
+                  "ready": {
+                    "value": {
+                      "status": "ready",
+                      "idle_timeout_seconds": 300
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "OCR iniciando o con error de warm-up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "starting": {
+                    "value": {
+                      "detail": {
+                        "status": "starting"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ocr": {
+      "post": {
+        "tags": ["OCR"],
+        "summary": "Ejecutar OCR de DNI",
+        "description": "Procesa imagen frontal, reversa o ambas. Si save_face_image=true y se envia frente, recorta la foto del rostro del DNI y la sube a S3.",
+        "operationId": "run_ocr",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OcrRequest"
+              },
+              "examples": {
+                "front": {
+                  "summary": "Frente con guardado de rostro",
+                  "value": {
+                    "front_image_base64": "...",
+                    "lang": "es",
+                    "save_face_image": true
+                  }
+                },
+                "frontAndBack": {
+                  "summary": "Frente y reverso",
+                  "value": {
+                    "front_image_base64": "...",
+                    "back_image_base64": "...",
+                    "lang": "es",
+                    "save_face_image": true
+                  }
+                },
+                "legacySingleImage": {
+                  "summary": "Payload legacy de una sola imagen frontal",
+                  "value": {
+                    "image_base64": "...",
+                    "lang": "es"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado OCR",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OcrResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload invalido o imagen no procesable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "OCR aun iniciando",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ready"
+          },
+          "idle_timeout_seconds": {
+            "type": "integer",
+            "example": 300
+          }
+        },
+        "required": [
+          "status",
+          "idle_timeout_seconds"
+        ]
+      },
+      "OcrRequest": {
+        "type": "object",
+        "properties": {
+          "image_base64": {
+            "type": "string",
+            "description": "Imagen frontal legacy en Base64."
+          },
+          "front_image_base64": {
+            "type": "string",
+            "description": "Imagen frontal del DNI en Base64."
+          },
+          "back_image_base64": {
+            "type": "string",
+            "description": "Imagen reversa del DNI en Base64."
+          },
+          "lang": {
+            "type": "string",
+            "default": "es",
+            "example": "es"
+          },
+          "save_face_image": {
+            "type": "boolean",
+            "default": false,
+            "description": "Si true, sube a S3 el recorte de la foto del rostro del frente."
+          },
+          "include_details": {
+            "type": "boolean",
+            "default": false,
+            "description": "Si true, devuelve lineas OCR y detalle por lado."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "image_base64"
+            ]
+          },
+          {
+            "required": [
+              "front_image_base64"
+            ]
+          },
+          {
+            "required": [
+              "back_image_base64"
+            ]
+          }
+        ]
+      },
+      "OcrResponse": {
+        "type": "object",
+        "properties": {
+          "structured": {
+            "$ref": "#/components/schemas/StructuredDocument"
+          },
+          "face_image_s3": {
+            "$ref": "#/components/schemas/S3Object"
+          },
+          "front": {
+            "type": "object",
+            "description": "Detalle OCR del frente cuando include_details=true."
+          },
+          "back": {
+            "type": "object",
+            "description": "Detalle OCR del reverso cuando include_details=true."
+          }
+        },
+        "required": [
+          "structured"
+        ]
+      },
+      "StructuredDocument": {
+        "type": "object",
+        "properties": {
+          "document_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "DNI"
+          },
+          "dni": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "12345678"
+          },
+          "apellido_paterno": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "apellido_materno": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "nombres": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fecha_nacimiento": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "14/07/1990"
+          },
+          "fecha_caducidad": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fecha_emision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sexo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "estado_civil": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "nacionalidad": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "numero_tarjeta": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mrz": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "departamento": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "provincia": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "distrito": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "direccion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "grupo_votacion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "S3Object": {
+        "type": "object",
+        "properties": {
+          "bucket": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string",
+            "example": "usuarios/12345678/foto_registro.jpg"
+          }
+        },
+        "required": [
+          "bucket",
+          "key"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {},
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

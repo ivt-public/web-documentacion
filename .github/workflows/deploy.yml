@@ -1,0 +1,40 @@
+name: Deploy Docusaurus to GitHub Pages
+
+on:
+  push:
+    tags:
+      - 'v*' # Se activará con cualquier tag que empiece con 'v' (ej: v1.0.0, v2.0)
+
+permissions:
+  contents: write    # Permite crear la rama y subir el HTML compilado
+  pages: write       # Permite interactuar con la API de GitHub Pages si fuera necesario
+  id-token: write    # Requerido por seguridad en flujos de despliegue modernos
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cambia a 'yarn' o 'pnpm' si usas otros gestores
+
+      - name: Install dependencies
+        run: npm ci # Usa 'yarn install --immutable' si usas yarn
+
+      - name: Build Docusaurus Website
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build # Carpeta por defecto donde Docusaurus compila el HTML
+          publish_branch: gh-pages-apis-identity

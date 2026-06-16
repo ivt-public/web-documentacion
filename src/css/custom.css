@@ -1,0 +1,361 @@
+/**
+ * Argos – Paleta de marca
+ * #1A202C  Navy oscuro   → fondo dark, navbar dark, footer
+ * #2D3748  Navy medio    → superficies secundarias en dark
+ * #E53935  Rojo Argos    → color primario, links, botones
+ * #FFFFFF  Blanco
+ * #F8FAFC  Off-white     → fondo light mode
+ */
+
+/* ── Variables globales (modo claro) ─────────────────────────────────────── */
+:root {
+  /* Escala de rojo Argos para Infima */
+  --ifm-color-primary:         #E53935;
+  --ifm-color-primary-dark:    #CE3330;
+  --ifm-color-primary-darker:  #C5302D;
+  --ifm-color-primary-darkest: #A82623;
+  --ifm-color-primary-light:   #E85653;
+  --ifm-color-primary-lighter: #EA6460;
+  --ifm-color-primary-lightest:#F28F8D;
+
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(229, 57, 53, 0.10);
+
+  /* Tokens de marca */
+  --argos-navy:       #1A202C;
+  --argos-navy-mid:   #2D3748;
+  --argos-red:        #E53935;
+  --argos-white:      #FFFFFF;
+  --argos-surface:    #F8FAFC;
+
+  /* Tipografía y superficies */
+  --ifm-background-color:         var(--argos-surface);
+  --ifm-background-surface-color: var(--argos-white);
+  --ifm-font-color-base:          #1A202C;
+
+  /* ── Navbar (modo claro) ──────────────────── */
+  --nav-bg:              rgba(255, 255, 255, 0.88);
+  --nav-shadow:          0 1px 0 rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  --nav-title:           #1A202C;
+  --nav-link:            rgba(26, 32, 44, 0.80);
+  --nav-link-hover:      var(--argos-red);
+  --nav-chevron:         rgba(26, 32, 44, 0.60);
+  --nav-dropdown-bg:     #ffffff;
+  --nav-dropdown-border: rgba(0, 0, 0, 0.10);
+  --nav-dropdown-link:   rgba(26, 32, 44, 0.78);
+  --nav-right-link:      rgba(26, 32, 44, 0.78);
+  --nav-search-bg:       rgba(0, 0, 0, 0.05);
+  --nav-search-color:    rgba(26, 32, 44, 0.55);
+  --nav-search-border:   rgba(0, 0, 0, 0.10);
+  --nav-logo-filter:     none;
+
+  /* ── Equipo (modo claro) ──────────────────── */
+  --equipo-muted:              rgba(26, 32, 44, 0.60);
+  --equipo-card-border:        rgba(0, 0, 0, 0.08);
+  --equipo-card-border-hover:  rgba(0, 0, 0, 0.15);
+  --equipo-featured-bg:        linear-gradient(145deg, #edf2f7 0%, #e2e8f0 100%);
+  --equipo-featured-shadow:    0 0 0 1px rgba(229,57,53,0.12), 0 8px 32px rgba(0,0,0,0.08);
+  --equipo-social-bg:          rgba(0, 0, 0, 0.05);
+  --equipo-social-border:      rgba(0, 0, 0, 0.10);
+  --equipo-social-color:       #4A5568;
+  --equipo-social-hover-bg:    rgba(0, 0, 0, 0.09);
+  --equipo-social-hover-color: #1A202C;
+  --equipo-stats-bg:           rgba(0, 0, 0, 0.04);
+  --equipo-stats-border:       rgba(0, 0, 0, 0.08);
+  --equipo-stat-item-bg:       rgba(0, 0, 0, 0.02);
+}
+
+/* ── Modo oscuro ──────────────────────────────────────────────────────────── */
+[data-theme='dark'] {
+  /* Rojo ligeramente más luminoso para mantener contraste sobre fondo oscuro */
+  --ifm-color-primary:         #EF5350;
+  --ifm-color-primary-dark:    #D94645;
+  --ifm-color-primary-darker:  #CE403F;
+  --ifm-color-primary-darkest: #AD3433;
+  --ifm-color-primary-light:   #F16A68;
+  --ifm-color-primary-lighter: #F37D7B;
+  --ifm-color-primary-lightest:#F7AEAC;
+
+  --docusaurus-highlighted-code-line-bg: rgba(239, 83, 80, 0.15);
+
+  --ifm-background-color:         var(--argos-navy);
+  --ifm-background-surface-color: var(--argos-navy-mid);
+  --ifm-card-background-color:    var(--argos-navy-mid);
+  --ifm-font-color-base:          #F8FAFC;
+  --ifm-color-emphasis-300:       rgba(255, 255, 255, 0.12);
+  --ifm-hr-border-color:          rgba(255, 255, 255, 0.10);
+
+  /* ── Navbar (modo oscuro) ──────────────────── */
+  --nav-bg:              rgba(26, 32, 44, 0.88);
+  --nav-shadow:          0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4);
+  --nav-title:           #ffffff;
+  --nav-link:            rgba(255, 255, 255, 0.80);
+  --nav-link-hover:      var(--argos-red);
+  --nav-chevron:         rgba(255, 255, 255, 0.65);
+  --nav-dropdown-bg:     var(--argos-navy-mid);
+  --nav-dropdown-border: rgba(255, 255, 255, 0.08);
+  --nav-dropdown-link:   rgba(255, 255, 255, 0.78);
+  --nav-right-link:      rgba(255, 255, 255, 0.82);
+  --nav-search-bg:       rgba(255, 255, 255, 0.08);
+  --nav-search-color:    rgba(255, 255, 255, 0.55);
+  --nav-search-border:   rgba(255, 255, 255, 0.12);
+  --nav-logo-filter:     brightness(0) invert(1);
+
+  /* ── Equipo (modo oscuro) ──────────────────── */
+  --equipo-muted:              rgba(255, 255, 255, 0.58);
+  --equipo-card-border:        rgba(255, 255, 255, 0.07);
+  --equipo-card-border-hover:  rgba(255, 255, 255, 0.14);
+  --equipo-featured-bg:        linear-gradient(145deg, #1E2638 0%, #252D40 100%);
+  --equipo-featured-shadow:    0 0 0 1px rgba(229,57,53,0.12), 0 8px 32px rgba(0,0,0,0.30);
+  --equipo-social-bg:          rgba(255, 255, 255, 0.06);
+  --equipo-social-border:      rgba(255, 255, 255, 0.08);
+  --equipo-social-color:       rgba(255, 255, 255, 0.55);
+  --equipo-social-hover-bg:    rgba(255, 255, 255, 0.12);
+  --equipo-social-hover-color: #ffffff;
+  --equipo-stats-bg:           rgba(255, 255, 255, 0.06);
+  --equipo-stats-border:       rgba(255, 255, 255, 0.08);
+  --equipo-stat-item-bg:       rgba(255, 255, 255, 0.03);
+}
+
+/* ── Navbar ───────────────────────────────────────────────────────────────── */
+.navbar {
+  background-color: var(--nav-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--nav-shadow);
+  border-top: 3px solid var(--argos-red);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  min-height: 4rem;
+}
+
+.navbar__title {
+  color: var(--nav-link);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.navbar__brand:hover .navbar__title {
+  color: var(--nav-link-hover);
+}
+
+.navbar__logo {
+  height: 4rem;
+  filter: var(--nav-logo-filter);
+}
+
+.navbar__link {
+  color: var(--nav-link);
+  font-weight: 500;
+  position: relative;
+  transition: color 0.18s ease;
+}
+
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  background: var(--argos-red);
+  border-radius: 1px;
+  opacity: 0;
+  transition: left 0.22s ease, right 0.22s ease, opacity 0.18s ease;
+}
+
+.navbar__link:hover::after,
+.navbar__link--active::after {
+  left: 0;
+  right: 0;
+  opacity: 1;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--nav-link-hover);
+}
+
+/* Toggle de modo oscuro/claro — siempre visible contra el fondo del navbar */
+.navbar .clean-btn {
+  color: var(--nav-link);
+}
+
+.navbar .clean-btn:hover {
+  color: var(--nav-title);
+}
+
+/* Chevron del dropdown */
+.navbar__item.dropdown .dropdown__toggle:after {
+  border-top-color: var(--nav-chevron);
+}
+
+/* Menú desplegable */
+.dropdown__menu {
+  background-color: var(--nav-dropdown-bg);
+  border: 1px solid var(--nav-dropdown-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+}
+
+.dropdown__link {
+  color: var(--nav-dropdown-link);
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown__link:hover,
+.dropdown__link--active {
+  background-color: rgba(229, 57, 53, 0.12);
+  color: var(--nav-title);
+}
+
+/* Botones de la derecha del navbar */
+.navbar__items--right .navbar__link {
+  color: var(--nav-right-link);
+}
+
+/* Botón "Exportar a PDF" */
+.navbar__items--right .button--outline.button--primary {
+  border-color: var(--argos-red);
+  color: var(--argos-red);
+  transition: background-color 0.18s, color 0.18s;
+}
+
+.navbar__items--right .button--outline.button--primary:hover {
+  background-color: var(--argos-red);
+  color: var(--argos-white);
+}
+
+/* Barra de búsqueda */
+.navbar .DocSearch-Button {
+  background: var(--nav-search-bg);
+  color: var(--nav-search-color);
+  border: 1px solid var(--nav-search-border);
+  border-radius: 6px;
+}
+
+.navbar .DocSearch-Button:hover {
+  background: var(--nav-search-bg);
+  box-shadow: none;
+}
+
+/* ── Hero section ─────────────────────────────────────────────────────────── */
+.hero--primary,
+[data-theme='light'] .hero--primary,
+[data-theme='dark'] .hero--primary {
+  background: linear-gradient(135deg, #1A202C 0%, #2D3748 55%, #1A202C 100%) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero--primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 80% at 75% 50%,
+    rgba(229, 57, 53, 0.14) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+.hero--primary,
+.hero--primary * {
+  color: #ffffff;
+}
+
+.hero__title {
+  color: #ffffff !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hero__subtitle {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.hero .button--secondary {
+  background: transparent;
+  border: 2px solid var(--argos-red);
+  color: var(--argos-white);
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.hero .button--secondary:hover {
+  background: var(--argos-red);
+  color: var(--argos-white);
+  text-decoration: none;
+}
+
+/* ── Footer – siempre navy oscuro ─────────────────────────────────────────── */
+.footer--dark {
+  background-color: var(--argos-navy);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Cards de features ────────────────────────────────────────────────────── */
+[data-theme='light'] .card {
+  border: 1px solid rgba(26, 32, 44, 0.08);
+  box-shadow: 0 2px 8px rgba(26, 32, 44, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+[data-theme='light'] .card:hover {
+  box-shadow: 0 6px 20px rgba(26, 32, 44, 0.12);
+  transform: translateY(-2px);
+}
+
+[data-theme='dark'] .card {
+  background-color: var(--argos-navy-mid);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+[data-theme='dark'] .card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  transform: translateY(-2px);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+[data-theme='dark'] .menu__link {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+[data-theme='dark'] .menu__link:hover,
+[data-theme='dark'] .menu__link--active {
+  color: var(--ifm-color-primary-lighter);
+  background: rgba(239, 83, 80, 0.10);
+}
+
+/* ── Table of contents ────────────────────────────────────────────────────── */
+[data-theme='dark'] .table-of-contents__link {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+[data-theme='dark'] .table-of-contents__link:hover,
+[data-theme='dark'] .table-of-contents__link--active {
+  color: var(--ifm-color-primary-lighter);
+}
+
+/* ── Transición suave al cambiar de tema ──────────────────────────────────── */
+*, *::before, *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.18s ease;
+}
+
+/* Excluir transición en elementos donde sería molesta */
+.hero--primary,
+.hero--primary::before,
+img,
+svg {
+  transition: none;
+}
